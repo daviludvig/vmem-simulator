@@ -12,11 +12,10 @@ using namespace std;
 class Page_Replacement
 {
 public:
-    /*
-     * This this the method called when a page fault occurs. Your work begins here!
-     */
     static void page_fault_handler(Page_Table *pt, int page);
     static void init_page_fault_algorithm(const std::string &alg);
+    static void set_disk(Disk *d);
+    static void print_stats();
 
 private:
     static int page_faults;
@@ -25,6 +24,7 @@ private:
     static std::vector<int> frame_table;
     static std::string algorithm;
     static std::queue<int> fifo_queue;
+    static Disk *disk;
 
     static int find_free_frame();
     static int find_frame_for_page(int page);

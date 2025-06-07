@@ -6,12 +6,17 @@ int Page_Replacement::disk_writes = 0;
 std::vector<int> Page_Replacement::frame_table;
 std::string Page_Replacement::algorithm;
 std::queue<int> Page_Replacement::fifo_queue;
+Disk* Page_Replacement::disk = nullptr;
 
 void Page_Replacement::init_page_fault_algorithm(const std::string &alg)
 {
     algorithm = alg;
-    // std::srand(std::time(nullptr));
-    std::srand(0); // Probabalistico
+    std::srand(0); // Determinístico para testes
+}
+
+void Page_Replacement::set_disk(Disk *d)
+{
+    disk = d;
 }
 
 int Page_Replacement::find_frame_for_page(int page) {
@@ -81,20 +86,19 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
             int victim_page = frame_table[frame_to_remove];
             int victim_bits;
             int dummy_frame;
+
             pt->page_table_get_entry(victim_page, &dummy_frame, &victim_bits);
 
             // Escreve no disco se modificada
             if (victim_bits & PROT_WRITE) {
                 char *physmem = (char *)pt->page_table_get_physmem();
                 char *data = physmem + frame_to_remove * Page_Table::PAGE_SIZE;
-                Disk disk("myvirtualdisk", pt->page_table_get_npages());
                 std::cout << "victim_page: " << victim_page << std::endl;
                 std::cout << "data: " << victim_page << std::endl;
-                disk.write(victim_page, data);
+                disk->write(victim_page, data);
                 disk_writes++;
             }
 
-            // Atualiza tabela de páginas
             pt->page_table_set_entry(victim_page, 0, 0);
             frame_table[frame_to_remove] = -1;
             free_frame = frame_to_remove;
@@ -103,16 +107,13 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
         // Lê página do disco
         char *physmem = (char *)pt->page_table_get_physmem();
         char *data = physmem + free_frame * Page_Table::PAGE_SIZE;
-        Disk disk("myvirtualdisk", pt->page_table_get_npages());
-        disk.read(page, data);
+        disk->read(page, data);
         disk_reads++;
 
-        // Atualiza estruturas
         std::cout << "FREE FRAME: " << free_frame << std::endl;
         pt->page_table_set_entry(page, free_frame, PROT_READ);
         frame_table[free_frame] = page;
 
-        // Atualiza filas/algoritmos
         if (algorithm == "fifo") {
             fifo_queue.push(page);
         }
@@ -123,4 +124,11 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
 
     std::cout << "===== FIM =====" << std::endl;
     std::cout << std::endl;
+}
+
+void Page_Replacement::print_stats()
+{
+    std::cout << "Page faults: " << page_faults << std::endl;
+    std::cout << "Disk reads: " << disk_reads << std::endl;
+    std::cout << "Disk writes: " << disk_writes << std::endl;
 }
