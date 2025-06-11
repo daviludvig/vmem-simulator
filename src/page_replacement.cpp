@@ -48,9 +48,32 @@ int Page_Replacement::select_frame_to_be_removed()
     } 
     else if (algorithm == "custom")
     {
-        return 0;
+
+        /*
+        
+        Escolhido algoritmo que aproveita o número lógico associado a cada página,
+        e remove a página com o menor número lógico. Isso é feito levando em consideração
+        que as páginas mais recentemente acessadas terão números lógicos maiores,
+        enquanto as menos recentemente acessadas terão números lógicos menores.
+    
+        */
+
+        int min_logical_number = INT_MAX; // Inicializa com o maior valor possível
+        int frame_to_remove = -1;
+
+        for (size_t i = 0; i < frame_table.size(); ++i) {
+            if (frame_table[i] != -1) {
+                if (frame_table[i] < min_logical_number) {
+                    min_logical_number = frame_table[i];          // maior número de página
+                    frame_to_remove = i;                // frame onde ela está
+                }
+            }
+        }
+    return frame_to_remove;
     }
-    return 0;
+
+    return -1; // Caso nenhum algoritmo seja reconhecido
+
 }
 
 void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
