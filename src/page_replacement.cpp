@@ -111,7 +111,7 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
         disk_reads++;
 
         std::cout << "FREE FRAME: " << free_frame << std::endl;
-        pt->page_table_set_entry(page, free_frame, PROT_READ);
+        pt->page_table_set_entry(page, free_frame, PROT_READ | PROT_WRITE); // Define a página como presente e com permissão de escrita e leitura
         frame_table[free_frame] = page;
 
         if (algorithm == "fifo") {
