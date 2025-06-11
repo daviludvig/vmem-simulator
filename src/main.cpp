@@ -13,33 +13,37 @@ int main(int argc, char *argv[])
 
 	int npages = atoi(argv[1]);
 	int nframes = atoi(argv[2]);
+	const char *algorithm = argv[3];
 	const char *program = argv[4];
 
-	Disk disk("myvirtualdisk", npages);
-    Program my_program;
+    Page_Replacement::init_page_fault_algorithm(algorithm);
 
+	Disk *disk = new Disk("myvirtualdisk", npages);  // Alocado no heap
+    Page_Replacement::set_disk(disk);                // Passa para o algoritmo
+
+    Program my_program;
     Page_Table pt(npages, nframes, Page_Replacement::page_fault_handler);
 	
 	unsigned char *virtmem = (unsigned char *) pt.page_table_get_virtmem();
 	
     if(!strcmp(program,"alpha")) {
 		my_program.alpha(virtmem, npages * Page_Table::PAGE_SIZE);
-
 	} else if(!strcmp(program,"beta")) {
 		my_program.beta(virtmem, npages * Page_Table::PAGE_SIZE);
-
 	} else if(!strcmp(program,"gamma")) {
 		my_program.gamma(virtmem, npages * Page_Table::PAGE_SIZE);
-
 	} else if(!strcmp(program,"delta")) {
 		my_program.delta(virtmem, npages * Page_Table::PAGE_SIZE);
-
 	} else {
 		cout << "unknown program: " << argv[4] << endl;
 		return 1;
 	}
 
     pt.page_table_delete();
-	disk.close_disk();
+	disk->close_disk();
+	delete disk;
+
+	Page_Replacement::print_stats();
+
 	return 0;
 }
