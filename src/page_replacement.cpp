@@ -7,6 +7,8 @@ std::vector<int> Page_Replacement::frame_table;
 std::string Page_Replacement::algorithm;
 std::queue<int> Page_Replacement::fifo_queue;
 Disk* Page_Replacement::disk = nullptr;
+std::vector<int> Page_Replacement::tempo_acesso; // Para LRU
+int Page_Replacement::tempo_atual = 0; // Contador de tempo para LRU
 
 void Page_Replacement::init_page_fault_algorithm(const std::string &alg)
 {
@@ -48,28 +50,22 @@ int Page_Replacement::select_frame_to_be_removed()
     } 
     else if (algorithm == "custom")
     {
-
         /*
-        
-        Escolhido algoritmo que aproveita o número lógico associado a cada página,
-        e remove a página com o menor número lógico. Isso é feito levando em consideração
-        que as páginas mais recentemente acessadas terão números lógicos maiores,
-        enquanto as menos recentemente acessadas terão números lógicos menores.
-    
+        * LRU
+        * 
         */
 
-        int min_logical_number = INT_MAX; // Inicializa com o maior valor possível
+        int min_time = INT_MAX;
         int frame_to_remove = -1;
-
-        for (size_t i = 0; i < frame_table.size(); ++i) {
-            if (frame_table[i] != -1) {
-                if (frame_table[i] < min_logical_number) {
-                    min_logical_number = frame_table[i];          // maior número de página
-                    frame_to_remove = i;                // frame onde ela está
-                }
+        for (int i = 0; i < (int)tempo_acesso.size(); ++i) {
+            if (tempo_acesso[i] < min_time) {
+                min_time = tempo_acesso[i];
+                frame_to_remove = i;
             }
         }
-    return frame_to_remove;
+        std::cout << "[LRU] Removendo frame " << frame_to_remove << " com último acesso em t=" << min_time << std::endl;
+        return frame_to_remove;
+
     }
 
     return -1; // Caso nenhum algoritmo seja reconhecido
@@ -79,6 +75,7 @@ int Page_Replacement::select_frame_to_be_removed()
 void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
     std::cout << "===== INICIO =====" << std::endl;
     page_faults++;
+    ++tempo_atual; // Incrementa o tempo para LRU
 
     int frame;
     int bits;
@@ -90,6 +87,8 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
     if (frame_table.empty()) {
         int nframes = pt->page_table_get_nframes();
         frame_table.resize(nframes, -1);
+        tempo_acesso.resize(nframes, 0); // Inicializa o vetor de tempos de acesso
+        std::cout << "[DEBUG] Inicializando frame_table com " << nframes << " frames." << std::endl;
     }
 
     std::cout << "[DEBUG] frame_table: ";
@@ -136,6 +135,7 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
         std::cout << "FREE FRAME: " << free_frame << std::endl;
         pt->page_table_set_entry(page, free_frame, PROT_READ | PROT_WRITE); // Define a página como presente e com permissão de escrita e leitura
         frame_table[free_frame] = page;
+        tempo_acesso[free_frame] = tempo_atual; // Atualiza o tempo de acesso para LRU
 
         if (algorithm == "fifo") {
             fifo_queue.push(page);
@@ -143,6 +143,9 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
 
     } else if (bits & PROT_READ) { // Página presente, mas sem permissão de escrita
         pt->page_table_set_entry(page, frame, bits | PROT_WRITE);
+        if (algorithm == "custom") {
+            tempo_acesso[frame] = tempo_atual; 
+        }
     }
 
     std::cout << "===== FIM =====" << std::endl;
@@ -154,4 +157,12 @@ void Page_Replacement::print_stats()
     std::cout << "Page faults: " << page_faults << std::endl;
     std::cout << "Disk reads: " << disk_reads << std::endl;
     std::cout << "Disk writes: " << disk_writes << std::endl;
+
+    if (algorithm == "custom") {
+        std::cout << "[DEBUG] Tempo de acesso (LRU):\n";
+        for (size_t i = 0; i < frame_table.size(); ++i) {
+            std::cout << "Frame " << i << ": página " << frame_table[i]
+                      << " | tempo=" << tempo_acesso[i] << std::endl;
+        }
+    }
 }

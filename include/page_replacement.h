@@ -29,6 +29,9 @@ private:
     static int find_free_frame();
     static int find_frame_for_page(int page);
     static int select_frame_to_be_removed();
+
+    static std::vector<int> tempo_acesso; // Para LRU
+    static int tempo_atual; // Contador de tempo para LRU
 };
 
 #endif
