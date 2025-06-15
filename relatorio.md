@@ -104,52 +104,91 @@ Com isso, observamos que o algoritmo `custom` (LRU) remove sempre a página que 
 ### 5. Resultados e Análises
 A seguir, serão listados, para cada programa (`alpha`, `beta`, `gamma` e `delta`), uma sequência de gráficos que mostram os valores de `page faults`, `disk reads` e `disk writes` para cada algoritmo de substituição de página (`rand`, `fifo` e `custom`).
 
-#### 5.1 Alpha
+> Cabe destacar que todos os testes de aleatoriedade foram executados com a semente de aleatoriedade `srand(0)`, para garantir a reprodutibilidade dos resultados.
+
+#### Resultados dos testes
+
+##### 5.1 Alpha
 - O comportamento de alpha é caracterizado por acessos sequenciais a páginas, o que causa muitas faltas de página, especialmente quando o número de frames é baixo. 
 - Esse comportamento pode ser visto nos seguintes gráficos:
 
-##### Leituras de disco
+###### Leituras de disco
 ![Alpha Disk Reads](relatorio/alpha/disk_reads_alpha.png)
 
-##### Escritas de disco
+###### Escritas de disco
 ![Alpha Disk Writes](relatorio/alpha/disk_writes_alpha.png)
 
-##### Faltas de página
+###### Faltas de página
 ![Alpha Page Faults](relatorio/alpha/page_faults_alpha.png)
 
-#### 5.2 Beta
+##### 5.2 Beta
 
-##### Leituras de disco
+###### Leituras de disco
 ![Beta Disk Reads](relatorio/beta/disk_reads_beta.png)
 
-##### Escritas de disco
+###### Escritas de disco
 ![Beta Disk Writes](relatorio/beta/disk_writes_beta.png)
 
-##### Faltas de página
+###### Faltas de página
 ![Beta Page Faults](relatorio/beta/page_faults_beta.png)
 
-#### 5.3 Gamma
+##### 5.3 Gamma
 
-##### Leituras de disco
+###### Leituras de disco
 ![Gamma Disk Reads](relatorio/gamma/disk_reads_gamma.png)
 
-##### Escritas de disco
+###### Escritas de disco
 ![Gamma Disk Writes](relatorio/gamma/disk_writes_gamma.png)
 
-##### Faltas de página
+###### Faltas de página
 ![Gamma Page Faults](relatorio/gamma/page_faults_gamma.png)
 
-#### 5.4 Delta
+##### 5.4 Delta
 
-##### Leituras de disco
+###### Leituras de disco
 ![Delta Disk Reads](relatorio/delta/disk_reads_delta.png)
 
-##### Escritas de disco
+###### Escritas de disco
 ![Delta Disk Writes](relatorio/delta/disk_writes_delta.png)
 
-##### Faltas de página
+###### Faltas de página
 ![Delta Page Faults](relatorio/delta/page_faults_delta.png)
 
+#### Análise dos resultados
+
+##### Valores iguais de `fifo` e `custom`
+Ambos os algoritmos `fifo` e `custom` se comportam de maneira semelhante quando
+1. As páginas não são reutilizadas dentro do espaço de frames disponíveis.
+2. As páginas são acessadas em um padrão sequencial e uniforme.
+
+Ou seja, não há reaproveitamento de páginas antes que elas sejam substituídas. Quando isso acontece, tanto `fifo` quanto `custom`
+- Inserem a nova página no primeiro frame livre;
+- Quando os frames estão cheios, removem a “mais antiga”:
+  - `fifo` remove a página que entrou primeiro;
+  - `custom` remove a página que não foi acessada há mais tempo.
+- Quando não há solicitações de reutilização de páginas, ambos os algoritmos apresentam o mesmo desempenho, pois não há diferença entre remover a página mais antiga ou a menos recentemente usada.
+
+Ou seja, os programas `alpha`, `beta`, `gamma` e `delta` não apresentam reutilização antes da substituição, não favorecem localidade temporal e, portanto, não se beneficiam de um algoritmo mais sofisticado como o `custom`.
+
+##### Caráter num geral ser descendente
+Os gráficos de `disk reads`, `disk writes` e `page faults` tendem a ser descendentes, pois:
+1. À medida que o número de frames aumenta, mais páginas podem ser mantidas na memória, reduzindo a necessidade de leituras e escritas no disco.
+2. Com mais frames, o número de faltas de página diminui, pois mais páginas podem ser mantidas na memória, reduzindo a necessidade de leituras e escritas no disco.
+3. O aumento do número de frames permite que mais páginas sejam mantidas na memória, reduzindo a necessidade de substituições e, consequentemente, o número de faltas de página.
+
+##### Comportamento constante do `gamma` com `fifo` e `custom`
+O programa `gamma` apresenta um padrão constante em relação ao número de frames, tanto para `fifo` quanto para `custom`. Isso ocorre porque o programa `gamma` acessa dois grandes vetores de forma sequencial e simétrica, realizando operações de produto escalar em iterações completas. Esse padrão resulta em um comportamento previsível de falta de páginas:
+1. Todas as páginas dos vetores são acessadas em sequência várias vezes. Isso gera um padrão de substituições que se repete de forma estável à medida que o número de frames aumenta.
+2. Como todas as páginas são usadas com a mesma frequência e espaçamento, não há uma vantagem clara em preservar as páginas mais recentemente acessadas, o que anula a diferença entre `fifo` e `custom` (já discutido anteriormente).
+
+Isso já não acontece com o `rand` porque o algoritmo escolhe aleatoriamente qual página remover da memória sempre que ocorre uma falta de página e não há frame livre. Dessa forma, o `rand` não apresenta um padrão constante, mas sim descendente, pois o número de frames aumenta e, consequentemente, o número de faltas de página diminui.
+
+##### Comportamento linear descendente de `delta`
+Seja com qualquer algoritmo de substituição de página, o programa `delta` apresenta, num geral, um comportamento linear descendente (em `rand` é perceptível uma tendência) para leituras de disco, escritas de disco e faltas de página. Isso ocorre porque os acessos do programa são feitos de forma aleatória, sendo altamente dispersos e com baixíssima reutilização.
+
+Dessa forma, à medida que o número de frames aumenta, mais páginas podem ser mantidas na memória - reduzindo a chance de substituições. 
+
+Ou seja, num geral, a tendência dos gráficos é de serem descendentes, mas pelo comportamento dos programas, acontece de não serem lineares. Porém, como o `delta` é extremamente disperso, ele apresenta o "pior" caso, que é o comportamento linear descendente.
 
 ## Apêndice
 ### Vazamento de memória
