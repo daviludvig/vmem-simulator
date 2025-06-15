@@ -6,31 +6,45 @@
 
 #include <iostream>
 #include <queue>
+#include <vector>
+#include <string>
 
 using namespace std;
 
 class Page_Replacement {
 public:
-  static void page_fault_handler(Page_Table *pt, int page);
-  static void init_page_fault_algorithm(const std::string &alg);
-  static void set_disk(Disk *d);
-  static void print_stats();
+  //Construtor
+  Page_Replacement(const std::string &alg, Disk *d, Page_Table *pt);
+
+  // Wrapper static que vai ser passado pro page_table. Explicação na classe
+  static void page_fault_handler_wrapper(Page_Table *pt, int page);
+
+  // Imprime as metricas finais
+  void print_stats();
 
 private:
-  static int page_faults;
-  static int disk_reads;
-  static int disk_writes;
-  static std::vector<int> frame_table;
-  static std::string algorithm;
-  static std::queue<int> fifo_queue;
-  static Disk *disk;
+  int page_faults;
+  int disk_reads;
+  int disk_writes;
+  std::vector<int> frame_table; // Mapeia frame -> page
+  std::string algorithm;
+  std::queue<int> fifo_queue;
+  Disk *disk;
+  Page_Table *page_table;
 
-  static int find_free_frame();
-  static int find_frame_for_page(int page);
-  static int select_frame_to_be_removed();
+  // Para o algoritmo LRU (custom)
+  std::vector<int> tempo_acesso;
+  int tempo_atual;
 
-  static std::vector<int> tempo_acesso; // Para LRU
-  static int tempo_atual;               // Contador de tempo para LRU
+  void page_fault_handler(int page);
+
+  // Métodos auxiliares
+  int find_free_frame();
+  int find_frame_for_page(int page);
+  int select_frame_to_be_removed();
+
+  // Ponteiro para a unica instância ativa, para que o wrapper possa encontrar
+  static Page_Replacement *current_instance;
 };
 
 #endif
