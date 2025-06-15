@@ -105,11 +105,35 @@ Com isso, observamos que o algoritmo `custom` (LRU) remove sempre a página que 
 ### 5. Resultados e Análises
 | Programa | Algoritmo | Page Faults | Disk Reads  | Disk Writes|
 |----------|-----------|-------------|-------------|------------|
-| 1        | 5         | 1           | 2           | 2         |
+| 1        | 5         | 1           | 2           | 2          |
 | 2        | 4         | 1           | 1           | 2          |
 | 3        | 6         | 1           | 3           | 2          |
 | 4        | 3         | 1           | 1           | 2          | 
 | 5        | 7         | 1           | 2           | 2          |
 | 6        | 4         | 1           | 1           | 2          |
 
+
+## Apêndice
+### Vazamento de memória
+Durante toda a implementação do sistema, foram constantemente verificados os vazamentos de memória, utilizando o Valgrind. Dessa forma, foi possível garantir que não existam vazamentos de memória no código final. A seguir, um exemplo de execução do Valgrind:
+
+```bash
+valgrind ./virtmem 10 10 rand alpha --leak-check=full
+```
+
+Que retorna o seguinte `HEAP SUMMARY`:
+
+```
+==815761== 
+==815761== HEAP SUMMARY:
+==815761==     in use at exit: 0 bytes in 0 blocks
+==815761==   total heap usage: 4 allocs, 4 frees, 75,328 bytes allocated
+==815761== 
+==815761== All heap blocks were freed -- no leaks are possible
+==815761== 
+==815761== For lists of detected and suppressed errors, rerun with: -s
+==815761== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+Ou seja, não foram encontrados vazamentos de memória durante a execução do sistema e todas as alocações de memória foram devidamente liberadas.
 
