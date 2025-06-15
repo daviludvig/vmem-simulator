@@ -151,12 +151,4 @@ void Page_Replacement::print_stats() {
   std::cout << "Page faults: " << page_faults << std::endl;
   std::cout << "Disk reads: " << disk_reads << std::endl;
   std::cout << "Disk writes: " << disk_writes << std::endl;
-
-  if (algorithm == "custom") {
-    std::cout << "[DEBUG] Tempo de acesso (LRU):\n";
-    for (size_t i = 0; i < frame_table.size(); ++i) {
-      std::cout << "Frame " << i << ": página " << frame_table[i]
-                << " | tempo=" << tempo_acesso[i] << std::endl;
-    }
-  }
 }

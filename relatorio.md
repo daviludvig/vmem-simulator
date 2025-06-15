@@ -1,4 +1,4 @@
-# Algoritmo de Escalonamento com Prioridades Dinâmicas e Aging
+# Relatório do Trabalho 2 - Memória Virtual Paginada Sob Demanda
 - Davi Ludvig,
 - João Paulo Oliveira e
 - Gibram Goulart.
@@ -12,19 +12,17 @@ O objetivo deste trabalho é implementar um sistema de memória virtual paginada
 ### 2. Ambiente Experimental
 
 - **Máquina utilizada**:  
-  - Sistema Operacional: XXXXXXXXXXX
-  - Processador: XXXXXXXXXXX
-  - Memória RAM: XX GB  
-  - Compilador: XXXXXXXXXX
-  - Make: XXXXXXXXXX 
+  - Sistema Operacional: Ubuntu 24.04 LTS
+  - Compilador: g++
+  - Make: GNU Make 4.3 compilado para x86_64-pc-linux-gnu
 
 - **Execução dos testes**:  
 Para cada programa (alpha, beta, gamma, delta), os seguintes comandos podem ser executados com variações:
 
   ```bash
-  ./build/virtmem 10 10 rand alpha
-  ./build/virtmem 10 10 fifo beta
-  ./build/virtmem 10 10 custom gamma
+  ./virtmem 10 10 rand alpha
+  ./virtmem 10 10 fifo beta
+  ./virtmem 10 10 custom gamma
   ...
   ```
 
@@ -66,7 +64,7 @@ Mantém uma fila das páginas carregadas. A página mais antiga (a que entrou pr
 
 #### 4.3 CUSTOM
 
-- Como algoritmo personalizado `custom` construído pelo grupo, foi decidido implementar uma versão do algoritmo de substituição de páginas LRU (Least Recently Used).
+- Como algoritmo personalizado `custom` construído pelo grupo, foi decidido implementar uma versão do algoritmo de substituição de páginas **LRU (Least Recently Used)**.
 - Na inicialização da classe `Page_Replacement`, são definidos dois atributos:
 1. O vetor de inteiros `tempo_acesso`, que armazena o tempo do último acesso de cada frame.
 2. O inteiro `tempo_atual`, que é incrementado a cada vez que uma página é acessada, servindo como um contador de tempo global.
@@ -80,7 +78,7 @@ Mantém uma fila das páginas carregadas. A página mais antiga (a que entrou pr
 #### 4.3.1 Comparações
 ##### Rand
 - O algoritmo `rand` seleciona um frame aleatoriamente para remoção, o que pode levar a uma alta taxa de faltas de página, especialmente em cenários onde as páginas acessadas recentemente são necessárias novamente.
-- Nesse cenário, exisitirão diversas possibilidades do `custom` se sair melhor que o `rand`, pois o `custom` prioriza a remoção de páginas que não foram acessadas recentemente, enquanto o `rand` não considera o histórico de acesso.
+- Nesse cenário, existirão diversas possibilidades do `custom` se sair melhor que o `rand`, pois o `custom` prioriza a remoção de páginas que não foram acessadas recentemente, enquanto o `rand` não considera o histórico de acesso.
 
 ##### FIFO
 - O algoritmo `fifo` remove a página que foi carregada há mais tempo, o que pode levar a uma taxa de faltas de página alta se as páginas acessadas recentemente forem removidas.
@@ -101,16 +99,56 @@ Depois da requisição da página `1`, as páginas `n` e `n+1` são requisitadas
 
 Com isso, observamos que o algoritmo `custom` (LRU) remove sempre a página que está há mais tempo sem ser acessada, o que pode levar a uma taxa de faltas de página menor em cenários onde as páginas acessadas recentemente são necessárias novamente.
 
+É perceptível que, neste caso, o algoritmo `custom` se sai melhor que o `rand` e o `fifo`, pois ele prioriza a remoção de páginas que não foram acessadas recentemente. Se fosse o caso de utilizar `fifo`, no tempo `n+3`, a página `1` seria removida, o que não é o ideal, pois ela foi acessada recentemente. Já o `rand` poderia remover qualquer página, sem considerar o histórico de acesso.
 
 ### 5. Resultados e Análises
-| Programa | Algoritmo | Page Faults | Disk Reads  | Disk Writes|
-|----------|-----------|-------------|-------------|------------|
-| 1        | 5         | 1           | 2           | 2          |
-| 2        | 4         | 1           | 1           | 2          |
-| 3        | 6         | 1           | 3           | 2          |
-| 4        | 3         | 1           | 1           | 2          | 
-| 5        | 7         | 1           | 2           | 2          |
-| 6        | 4         | 1           | 1           | 2          |
+A seguir, serão listados, para cada programa (`alpha`, `beta`, `gamma` e `delta`), uma sequência de gráficos que mostram os valores de `page faults`, `disk reads` e `disk writes` para cada algoritmo de substituição de página (`rand`, `fifo` e `custom`).
+
+#### 5.1 Alpha
+- O comportamento de alpha é caracterizado por acessos sequenciais a páginas, o que causa muitas faltas de página, especialmente quando o número de frames é baixo. 
+- Esse comportamento pode ser visto nos seguintes gráficos:
+
+##### Leituras de disco
+![Alpha Disk Reads](relatorio/alpha/disk_reads_alpha.png)
+
+##### Escritas de disco
+![Alpha Disk Writes](relatorio/alpha/disk_writes_alpha.png)
+
+##### Faltas de página
+![Alpha Page Faults](relatorio/alpha/page_faults_alpha.png)
+
+#### 5.2 Beta
+
+##### Leituras de disco
+![Beta Disk Reads](relatorio/beta/disk_reads_beta.png)
+
+##### Escritas de disco
+![Beta Disk Writes](relatorio/beta/disk_writes_beta.png)
+
+##### Faltas de página
+![Beta Page Faults](relatorio/beta/page_faults_beta.png)
+
+#### 5.3 Gamma
+
+##### Leituras de disco
+![Gamma Disk Reads](relatorio/gamma/disk_reads_gamma.png)
+
+##### Escritas de disco
+![Gamma Disk Writes](relatorio/gamma/disk_writes_gamma.png)
+
+##### Faltas de página
+![Gamma Page Faults](relatorio/gamma/page_faults_gamma.png)
+
+#### 5.4 Delta
+
+##### Leituras de disco
+![Delta Disk Reads](relatorio/delta/disk_reads_delta.png)
+
+##### Escritas de disco
+![Delta Disk Writes](relatorio/delta/disk_writes_delta.png)
+
+##### Faltas de página
+![Delta Page Faults](relatorio/delta/page_faults_delta.png)
 
 
 ## Apêndice
