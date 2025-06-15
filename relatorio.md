@@ -13,11 +13,11 @@ O objetivo deste trabalho é implementar um sistema de memória virtual paginada
 
 - **Máquina utilizada**:  
   - Sistema Operacional: Ubuntu 24.04 LTS
-  - Compilador: g++
+  - Compilador: g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
   - Make: GNU Make 4.3 compilado para x86_64-pc-linux-gnu
 
 - **Execução dos testes**:  
-Para cada programa (alpha, beta, gamma, delta), os seguintes comandos podem ser executados com variações:
+Para cada programa (`alpha`, `beta`, `gamma`, `delta`), os seguintes comandos podem ser executados com variações:
 
   ```bash
   ./virtmem 10 10 rand alpha
@@ -33,8 +33,24 @@ O projeto foi dividido nas seguintes classes:
 - `Page_Table`: Interface com a tabela de páginas.
 - `Disk`: Simulação de um disco secundário.
 - `Page_Replacement`: Gerencia o estado dos frames físicos (livres/ocupados) e realiza as substituições de páginas.
-- `Program`: Classe responsável por gerenciar os programas utilizados nas execuções (alpha, beta, gamma e delta). Ela coordena o fluxo das instruções, realiza acessos à memória virtual e simula os diferentes padrões de uso de memória definidos para os testes.
-#### 3.2 Funcionamento do Tratador de Page Faults:
+- `Program`: Classe responsável por gerenciar os programas utilizados nas execuções (`alpha`, `beta`, `gamma` e `delta`). Ela coordena o fluxo das instruções, realiza acessos à memória virtual e simula os diferentes padrões de uso de memória definidos para os testes.
+
+#### 3.2 Como executar o sistema
+Foi construído um arquivo `Makefile` para facilitar a compilação e execução do sistema. Para compilar o sistema, basta executar o comando na raiz do projeto (onde está localizado o arquivo `Makefile`):
+
+```bash
+make
+```
+
+Depois disso, o executável `virtmem` estará disponível na raiz do projeto. Para executar o sistema, utilize o seguinte comando:
+
+```bash
+./virtmem <número de frames> <número de páginas> <algoritmo de substituição> <programa>
+```
+
+> Todos os objetos `.o` estão localizados na pasta `build`, e o executável `virtmem` está localizado na raiz do projeto.
+
+#### 3.3 Funcionamento do Tratador de Page Faults:
 ##### Passos:
 1. Detecta a falta de página.
 2. Se for a primeira falta, inicializa os frames.
@@ -50,6 +66,8 @@ O projeto foi dividido nas seguintes classes:
 > Estatísticas de execução (page faults, disk reads/writes) são coletadas automaticamente.
 
 ![Diagrama Fluxo](relatorio/fluxo.png)
+
+#### 3.4 Diagrama de Classes
 
 ### 4. Algoritmos de Substituição de Página
 
@@ -109,7 +127,7 @@ A seguir, serão listados, para cada programa (`alpha`, `beta`, `gamma` e `delta
 #### Resultados dos testes
 
 ##### 5.1 Alpha
-- O comportamento de alpha é caracterizado por acessos sequenciais a páginas, o que causa muitas faltas de página, especialmente quando o número de frames é baixo. 
+- O comportamento de `alpha` é caracterizado por acessos sequenciais a páginas, o que causa muitas faltas de página, especialmente quando o número de frames é baixo. 
 - Esse comportamento pode ser visto nos seguintes gráficos:
 
 ###### Leituras de disco
