@@ -5,7 +5,7 @@ SRC = src
 BUILD = build
 
 OBJS = $(BUILD)/main.o $(BUILD)/page_table.o $(BUILD)/disk.o $(BUILD)/program.o $(BUILD)/page_replacement.o
-TARGET = $(BUILD)/virtmem
+TARGET = virtmem  # executável irá para a pasta raiz
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET)
@@ -27,4 +27,3 @@ $(BUILD)/program.o: $(SRC)/program.cpp
 
 clean:
 	rm -f $(BUILD)/*.o $(TARGET)
-

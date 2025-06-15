@@ -1,5 +1,7 @@
 opsys-sp22
 .vscode
+venv
+__pycache__
 
 # Prerequisites
 *.d
