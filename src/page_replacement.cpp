@@ -54,8 +54,6 @@ int Page_Replacement::select_frame_to_be_removed() {
         frame_a_remover = i;
       }
     }
-    std::cout << "[LRU] Removendo frame " << frame_a_remover
-              << " com último acesso em t=" << tempo_minimo << std::endl;
     return frame_a_remover;
   }
 
@@ -63,7 +61,6 @@ int Page_Replacement::select_frame_to_be_removed() {
 }
 
 void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
-  std::cout << "===== INICIO =====" << std::endl;
   page_faults++;
   ++tempo_atual; // Incrementa o tempo para LRU
 
@@ -71,28 +68,16 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
   int bits;
   pt->page_table_get_entry(page, &frame, &bits);
 
-  std::cout << "Pagina: " << page << std::endl;
 
   // Inicializa estruturas na primeira falta
   if (frame_table.empty()) {
     int numero_frames = pt->page_table_get_nframes();
     frame_table.resize(numero_frames, -1); // Inicializa o vetor de frames todos com -1
     tempo_acesso.resize(numero_frames, 0); // Inicializa o vetor de tempos de acesso todos com 0
-    std::cout << "[DEBUG] Inicializando frame_table com " << numero_frames
-              << " frames." << std::endl;
   }
-
-  std::cout << "[DEBUG] frame_table: ";
-  for (size_t i = 0; i < frame_table.size(); ++i) {
-    std::cout << frame_table[i] << " ";
-  }
-  std::cout << std::endl;
-
-  std::cout << "bits: " << bits << std::endl;
 
   if (bits == 0) { // Página não presente
     int frame_livre = find_free_frame();
-    std::cout << frame_livre << std::endl;
 
     if (frame_livre == -1) { // Não há frame livre
       int frame_to_remove = select_frame_to_be_removed();
@@ -106,8 +91,6 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
       if (victim_bits & PROT_WRITE) {
         char *mem_fisica_ptr = (char *)pt->page_table_get_physmem();
         char *data = mem_fisica_ptr + frame_to_remove * Page_Table::PAGE_SIZE;
-        std::cout << "victim_page: " << victim_page << std::endl;
-        std::cout << "data: " << victim_page << std::endl;
         disk->write(victim_page, data);
         disk_writes++;
       }
@@ -123,7 +106,6 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
     disk->read(page, data);
     disk_reads++;
 
-    std::cout << "FREE FRAME: " << frame_livre << std::endl;
     pt->page_table_set_entry(
         page, frame_livre,
         PROT_READ); // Define a página como presente e com permissão de leitura
@@ -143,8 +125,6 @@ void Page_Replacement::page_fault_handler(Page_Table *pt, int page) {
     }
   }
 
-  std::cout << "===== FIM =====" << std::endl;
-  std::cout << std::endl;
 }
 
 void Page_Replacement::print_stats() {

@@ -34,7 +34,6 @@ void Program::alpha( unsigned char *data, int length )
 	}
 
 	cout << "alpha: result is " << total << endl;
-	cout << "Result: " << total << endl; // TODO REMOVE
 
 }
 
@@ -62,7 +61,6 @@ void Program::beta( unsigned char *data, int length )
 	}
 
     cout << "beta: result is " << total << endl;
-	cout << "Result: " << total << endl; // TODO REMOVE
 
 }
 
@@ -88,7 +86,6 @@ void Program::gamma( unsigned char *data, int length )
 	}
 
     cout << "gamma: result is " << total << endl;
-	cout << "Result: " << total << endl; // TODO REMOVE
 }
 
 void Program::delta( unsigned char *data, int length )
@@ -118,6 +115,5 @@ void Program::delta( unsigned char *data, int length )
 	}
 
     cout << "delta: result is " << total << endl;
-	cout << "Result: " << total << endl; // TODO REMOVE
 
 }
