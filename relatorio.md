@@ -208,6 +208,12 @@ Dessa forma, à medida que o número de frames aumenta, mais páginas podem ser 
 
 Ou seja, num geral, a tendência dos gráficos é de serem descendentes, mas pelo comportamento dos programas, acontece de não serem lineares. Porém, como o `delta` é extremamente disperso, ele apresenta o "pior" caso, que é o comportamento linear descendente.
 
+##### Tempo de execução
+Cabe destacar que o tempo de execução do programa `delta` é significativamente maior que o dos outros programas, devido à sua natureza de acessos aleatórios e dispersos. Isso resulta em um número elevado de faltas de página e, consequentemente, em mais leituras e escritas no disco.
+
+Isso pode ser perceptível no seguinte gráfico que compara o tempo de execução dos programas:
+![Tempo de Execução](relatorio/tempo_execucao.png)
+
 ## Apêndice
 ### Vazamento de memória
 Durante toda a implementação do sistema, foram constantemente verificados os vazamentos de memória, utilizando o Valgrind. Dessa forma, foi possível garantir que não existam vazamentos de memória no código final. A seguir, um exemplo de execução do Valgrind:
