@@ -23,7 +23,7 @@ valor_esperado = {
 media_exec_por_programa = {}
 
 for program in programs:
-    frame_range = list(range(3, 20))
+    frame_range = list(range(3, 100))
     print(f"Testando com {npages} páginas e até {frame_range[-1]} frames, programa: {program}, algoritmos: {algorithms}")
     results = {
         alg: {
@@ -46,7 +46,8 @@ for program in programs:
                 output = subprocess.check_output(cmd, text=True)
                 end = time.perf_counter()
                 exec_time = end - start
-                output2 = subprocess.check_output(cmd2, text=True)
+                print(f"Tempo de execução: {exec_time} segundos")
+                # output2 = subprocess.check_output(cmd2, text=True)
             except subprocess.CalledProcessError as e:
                 print(f"Erro na execução com {nframes} frames: {e}")
                 continue
@@ -55,10 +56,10 @@ for program in programs:
             rd = int(re.search(r"Disk reads: (\d+)", output).group(1))
             wr = int(re.search(r"Disk writes: (\d+)", output).group(1))
             result = int(re.search(r"result is (\d+)", output).group(1))
-            pf2 = int(re.search(r"Page faults: (\d+)", output2).group(1))
-            rd2 = int(re.search(r"Disk reads: (\d+)", output2).group(1))
-            wr2 = int(re.search(r"Disk writes: (\d+)", output2).group(1))
-            result2 = int(re.search(r"result is (\d+)", output2).group(1))
+            # pf2 = int(re.search(r"Page faults: (\d+)", output2).group(1))
+            # rd2 = int(re.search(r"Disk reads: (\d+)", output2).group(1))
+            # wr2 = int(re.search(r"Disk writes: (\d+)", output2).group(1))
+            # result2 = int(re.search(r"result is (\d+)", output2).group(1))
 
             results[alg]["page_faults"].append(pf)
             results[alg]["disk_reads"].append(rd)
