@@ -1,7 +1,7 @@
 # Relatório do Trabalho 2 - Memória Virtual Paginada Sob Demanda
-* Davi Ludvig, 
-* João Paulo Oliveira e
-* Gibram Goulart.
+* Davi Ludvig Longen Machado (23100473), 
+* João Paulo Oliveira Melo (23204880) e
+*  Gibram Goulart Farias (20200402).
 
 ## Sumário
 
@@ -118,11 +118,11 @@ Depois disso, o executável `virtmem` estará disponível na raiz do projeto. Pa
 
 ##### 3.4.1 Diagrama de classes
 
-![Diagrama de classes](relatorio/uml.png)
+![Diagrama de classes](imagens_relatorio/uml.png)
 
 ##### 3.4.2 Fluxo
 
-![Diagrama Fluxo](relatorio/fluxo.png)
+![Diagrama Fluxo](imagens_relatorio/fluxo.png)
 
 ### 4. Algoritmos de Substituição de Página
 
@@ -166,7 +166,7 @@ Mantém uma fila ( `std::queue` ) das páginas carregadas na memória. Quando um
 
 * Foi constrúido o seguinte diagrama gráfico para melhor entendimento do algoritmo `custom`:
 
-![Diagrama Custom](relatorio/custom.png)
+![Diagrama Custom](imagens_relatorio/custom.png)
 
 Primeiro, alocou-se ambos vetores que representam o `frame` e o `tempo_acesso` para cada frame ( `n` ). O vetor de frames inicia com todos os valores iguais a -1, indicando que nenhum frame está ocupado. O vetor de `tempo_acesso` inicia com todos os valores iguais a 0, indicando que nenhum frame foi acessado.
 
@@ -215,11 +215,11 @@ O programa `alpha` acessa a memória de forma sequencial em blocos. Essa caracte
 
 A performance idêntica entre FIFO e CUSTOM (LRU) sugere que o padrão de acesso sequencial do `alpha` não oferece oportunidades para o LRU explorar a localidade temporal. A página menos recentemente usada é sempre a primeira que entrou, tornando os dois algoritmos equivalentes nesse cenário. Add commentMore actions
 
-![disk_reads_alpha.png](relatorio/alpha/disk_reads_alpha.png)
+![disk_reads_alpha.png](imagens_relatorio/alpha/disk_reads_alpha.png)
 
-![disk_writes_alpha.png](relatorio/alpha/disk_writes_alpha.png)
+![disk_writes_alpha.png](imagens_relatorio/alpha/disk_writes_alpha.png)
 
-![page_faults_alpha.png](relatorio/alpha/page_faults_alpha.png)
+![page_faults_alpha.png](imagens_relatorio/alpha/page_faults_alpha.png)
 
 ##### 5.1.2 Beta
 
@@ -230,11 +230,11 @@ O programa `beta` executa uma ordenação ( `qsort` ), resultando em um padrão 
 
 O padrão de "escada" indica que o desempenho melhora em saltos discretos, provavelmente quando o número de frames se torna suficiente para acomodar partições inteiras dos dados durante o processo de ordenação. A falta de vantagem do CUSTOM sobre o FIFO sugere que, embora o acesso não seja puramente sequencial, o padrão de referência às páginas é tão disperso que a localidade temporal não é explorada.
 
-![disk_reads_beta.png](relatorio/beta/disk_reads_beta.png)
+![disk_reads_beta.png](imagens_relatorio/beta/disk_reads_beta.png)
 
-![disk_writes_beta.png](relatorio/beta/disk_writes_beta.png)
+![disk_writes_beta.png](imagens_relatorio/beta/disk_writes_beta.png)
 
-![page_faults_beta.png](relatorio/beta/page_faults_beta.png)
+![page_faults_beta.png](imagens_relatorio/beta/page_faults_beta.png)
 
 ##### 5.1.3 Gamma
 
@@ -244,11 +244,11 @@ O programa `gamma` computa o produto escalar entre dois grandes vetores repetida
 
 A performance constante de FIFO e CUSTOM é um exemplo clássico de "thrashing". Adicionar mais frames não resolve o problema, pois o padrão de remoção sistemática continua. O algoritmo RAND, por sua natureza aleatória, consegue quebrar esse ciclo.
 
-![disk_reads_gamma.png](relatorio/gamma/disk_reads_gamma.png)
+![disk_reads_gamma.png](imagens_relatorio/gamma/disk_reads_gamma.png)
 
-![disk_writes_gamma.png](relatorio/gamma/disk_writes_gamma.png)
+![disk_writes_gamma.png](imagens_relatorio/gamma/disk_writes_gamma.png)
 
-![page_faults_gamma.png](relatorio/gamma/page_faults_gamma.png)
+![page_faults_gamma.png](imagens_relatorio/gamma/page_faults_gamma.png)
 
 ##### 5.1.4 Delta
 
@@ -258,11 +258,11 @@ O programa `delta` realiza um grande número de trocas em locais aleatórios da 
 
 Esse comportamento demonstra que, na ausência de localidade, o algoritmo de substituição de página se torna irrelevante. A probabilidade de acessar qualquer página é a mesma, então a escolha de qual página "vítima" remover (a mais antiga, a menos usada ou uma aleatória) não impacta o resultado final. A queda linear é esperada: com mais frames, a chance de uma página aleatoriamente acessada estar na memória aumenta proporcionalmente, reduzindo as faltas de página de forma linear.
 
-![disk_reads_delta.png](relatorio/delta/disk_reads_delta.png)
+![disk_reads_delta.png](imagens_relatorio/delta/disk_reads_delta.png)
 
-![disk_writes_delta.png](relatorio/delta/disk_writes_delta.png)
+![disk_writes_delta.png](imagens_relatorio/delta/disk_writes_delta.png)
 
-![page_faults_delta.png](relatorio/delta/page_faults_delta.png)
+![page_faults_delta.png](imagens_relatorio/delta/page_faults_delta.png)
 
 #### 5.2 Análise dos resultados
 
@@ -318,7 +318,7 @@ Cabe destacar que o tempo de execução do programa `delta` é significativament
 
 Isso pode ser perceptível no seguinte gráfico que compara o tempo de execução dos programas:
 
-![Tempo de Execução](relatorio/exec_time_avg_por_programa.png)
+![Tempo de Execução](imagens_relatorio/exec_time_avg_por_programa.png)
 
 ## Apêndice
 
