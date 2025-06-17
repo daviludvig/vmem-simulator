@@ -54,7 +54,8 @@ void Page_Table::page_table_delete()
 {
 	munmap(virtmem, npages * PAGE_SIZE);
 	munmap(physmem, nframes * PAGE_SIZE);
-
+	delete[] page_bits;
+	delete[] page_mapping;
 	close(fd);
 }
 
