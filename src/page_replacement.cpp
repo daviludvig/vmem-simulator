@@ -5,7 +5,8 @@
 // Ponteiro da instancia. Nulo ate receber o obj criado
 Page_Replacement *Page_Replacement::current_instance = nullptr;
 
-Page_Replacement::Page_Replacement(const std::string &alg, Disk *d, Page_Table *pt) {
+Page_Replacement::Page_Replacement(const std::string &alg, Disk *d,
+                                   Page_Table *pt) {
   this->page_faults = 0;
   this->disk_reads = 0;
   this->disk_writes = 0;
@@ -23,21 +24,24 @@ Page_Replacement::Page_Replacement(const std::string &alg, Disk *d, Page_Table *
 
   std::srand(0); // Garante a determinismo para o 'rand'
 
-  //Define a instancia static pro wrapper chamar o metodo correto. Isso aqui precisa existir
-  //pq Page_Table (que nao deve ser modificado) solicita um ponteiro de funcao simples. Funcionaria
-  //pra metodos static já que eles não pertencem a nenhum objeto especifico
+  // Define a instancia static pro wrapper chamar o metodo correto. Isso aqui
+  // precisa existir pq Page_Table (que nao deve ser modificado) solicita um
+  // ponteiro de funcao simples. Funcionaria pra metodos static já que eles não
+  // pertencem a nenhum objeto especifico
   current_instance = this;
 }
 
-
-//Isso aqui é um wrapper pro Page_Table. Ele e responsavel por delegar a chamada
-//do metodo pra instancia correta
+// Isso aqui é um wrapper pro Page_Table. Ele e responsavel por delegar a
+// chamada do metodo pra instancia correta
 void Page_Replacement::page_fault_handler_wrapper(Page_Table *pt, int page) {
   if (current_instance) {
     current_instance->page_fault_handler(page);
   } else {
-    // Isso aqui nao deve ocorrer, e cenario do handler ser chamado antes da init do obj. Se ocorrer matar execucao
-    cerr << "FATAL: Page fault handler called without an active Page_Replacement instance." << endl;
+    // Isso aqui nao deve ocorrer, e cenario do handler ser chamado antes da
+    // init do obj. Se ocorrer matar execucao
+    cerr << "FATAL: Page fault handler called without an active "
+            "Page_Replacement instance."
+         << endl;
     abort();
   }
 }
@@ -104,7 +108,8 @@ void Page_Replacement::page_fault_handler(int page) {
       // Se a pagina vitima foi modificada (dirty bit) escrever no disco
       if (victim_bits & PROT_WRITE) {
         char *physmem_ptr = (char *)page_table->page_table_get_physmem();
-        char *data_to_write = physmem_ptr + frame_to_remove * Page_Table::PAGE_SIZE;
+        char *data_to_write =
+            physmem_ptr + frame_to_remove * Page_Table::PAGE_SIZE;
         disk->write(victim_page, data_to_write);
         disk_writes++;
       }

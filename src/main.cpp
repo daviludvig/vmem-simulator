@@ -21,7 +21,8 @@ int main(int argc, char *argv[]) {
   Disk *disk = new Disk("Disco simulado 1", npages);
 
   // Tabela de paginas. Precisa passar um wrapper aqui como handler
-  // A Page_Table ainda nao sabe sobre a instância do Page_Replacement, e nao precisa
+  // A Page_Table ainda nao sabe sobre a instância do Page_Replacement, e nao
+  // precisa
   Page_Table pt(npages, nframes, Page_Replacement::page_fault_handler_wrapper);
 
   // Agora cria instnacia do Page_Replacement

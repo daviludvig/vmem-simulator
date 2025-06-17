@@ -33,28 +33,7 @@ Page_Table::Page_Table(int npages, int nframes, Page_Table::page_fault_handler_t
 	this->npages = npages;
 
 	/*
-		TODO checar se é permitido
-		Isso foi alterado do arquivo origial do professor
-
-		Alterado pelo comportamento
-		[ludvig@seclab Documentos/vmem-simulator] (dev)*$ ./build/virtmem 10 10 rand alpha                               18:53
-
-		alpha: initializing memory
-		page fault on page #0
-		page fault on page #1
-		page fault on page #2
-		page fault on page #3
-		page fault on page #4
-		page fault on page #5
-		page fault on page #6
-		page fault on page #7
-		page fault on page #8
-		page fault on page #9
-		alpha: modifying memory...
-		alpha: summing up results
-		alpha: result is 5222400
-		munmap_chunk(): invalid pointer
-		[1]    383248 IOT instruction (core dumped)  ./build/virtmem 10 10 rand alpha
+	* Alteração solicitada
 	*/
 	this->page_bits = new int[npages];
 	this->page_mapping = new int[npages];
@@ -75,34 +54,7 @@ void Page_Table::page_table_delete()
 {
 	munmap(virtmem, npages * PAGE_SIZE);
 	munmap(physmem, nframes * PAGE_SIZE);
-	
-	/*
-		TODO checar se é permitido
-		Isso foi alterado do arquivo origial do professor
 
-		Alterado pelo comportamento
-		[ludvig@seclab Documentos/vmem-simulator] (dev)*$ ./build/virtmem 10 10 rand alpha                               18:53
-
-		alpha: initializing memory
-		page fault on page #0
-		page fault on page #1
-		page fault on page #2
-		page fault on page #3
-		page fault on page #4
-		page fault on page #5
-		page fault on page #6
-		page fault on page #7
-		page fault on page #8
-		page fault on page #9
-		alpha: modifying memory...
-		alpha: summing up results
-		alpha: result is 5222400
-		munmap_chunk(): invalid pointer
-		[1]    383248 IOT instruction (core dumped)  ./build/virtmem 10 10 rand alpha
-
-	*/
-	delete[] page_bits;
-	delete[] page_mapping;
 	close(fd);
 }
 

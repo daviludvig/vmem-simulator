@@ -6,14 +6,14 @@
 
 #include <iostream>
 #include <queue>
-#include <vector>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class Page_Replacement {
 public:
-  //Construtor
+  // Construtor
   Page_Replacement(const std::string &alg, Disk *d, Page_Table *pt);
 
   // Wrapper static que vai ser passado pro page_table. Explicação na classe
