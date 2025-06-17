@@ -325,31 +325,9 @@ Isso pode ser perceptível no seguinte gráfico que compara o tempo de execuçã
 
 ### Vazamento de memória
 
-Durante toda a implementação do sistema, foram constantemente verificados os vazamentos de memória, utilizando o Valgrind, para garantir que não existam vazamentos no código final. A alocação dinâmica de memória é corretamente liberada com `delete[]` em seus respectivos destrutores ou métodos de limpeza. O objeto `Disk` é explicitamente deletado em `main.cpp` . A seguir, um exemplo de execução do Valgrind:
+Durante toda a implementação do sistema, foram realizados testes constantes para verificar a presença de vazamentos de memória, utilizando o AddressSanitizer (-fsanitize=address). Ao final do desenvolvimento, o sistema foi executado com o comando ./virtmem 10 10 rand alpha, e nenhuma falha ou vazamento de memória foi detectado, comprovando que todas as alocações dinâmicas foram devidamente tratadas.
 
-```bash
-valgrind ./virtmem 10 10 rand alpha --leak-check=full
-```
-
-Que obteve o seguinte retorno:
-
-```
-==375405== Memcheck, a memory error detectorAdd commentMore actions
-==375405== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==375405== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==375405== Command: ./virtmem 10 10 rand alpha --leak-check=full
-==375405== 
-use: virtmem <npages> <nframes> <rand|fifo|custom> <alpha|beta|gamma|delta>
-==375405== 
-==375405== HEAP SUMMARY:
-==375405==     in use at exit: 0 bytes in 0 blocks
-==375405==   total heap usage: 2 allocs, 2 frees, 74,752 bytes allocated
-==375405== 
-==375405== All heap blocks were freed -- no leaks are possible
-==375405== 
-==375405== For lists of detected and suppressed errors, rerun with: -s
-==375405== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-```
+A alocação dinâmica de memória é corretamente liberada com delete[] em seus respectivos destrutores ou métodos de limpeza. O objeto Disk é explicitamente deletado em main.cpp.
 
 Ou seja, não foram encontrados vazamentos de memória durante a execução do sistema e todas as alocações de memória foram devidamente liberadas.
 
