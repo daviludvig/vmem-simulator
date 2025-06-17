@@ -3,6 +3,42 @@
 - João Paulo Oliveira e
 - Gibram Goulart.
 
+## Sumário
+- [Relatório do Trabalho 2 - Memória Virtual Paginada Sob Demanda](#relatório-do-trabalho-2---memória-virtual-paginada-sob-demanda)
+  - [Sumário](#sumário)
+  - [Introdução](#introdução)
+    - [1. Objetivo](#1-objetivo)
+    - [2. Ambiente Experimental](#2-ambiente-experimental)
+    - [3 Arquitetura](#3-arquitetura)
+      - [3.1 Estrutura Básica](#31-estrutura-básica)
+      - [3.2 Como executar o sistema](#32-como-executar-o-sistema)
+      - [3.3 Funcionamento do Tratador de Page Faults:](#33-funcionamento-do-tratador-de-page-faults)
+      - [3.4 Diagramas](#34-diagramas)
+        - [3.4.1 Diagrama de classes](#341-diagrama-de-classes)
+        - [3.4.2 Fluxo](#342-fluxo)
+    - [4. Algoritmos de Substituição de Página](#4-algoritmos-de-substituição-de-página)
+      - [4.1. RANDOM](#41-random)
+      - [4.2. FIFO (First-In, First-Out)](#42-fifo-first-in-first-out)
+      - [4.3 CUSTOM](#43-custom)
+      - [4.3.1 Comparações](#431-comparações)
+        - [Rand](#rand)
+        - [FIFO](#fifo)
+        - [Gráfico para entendimento](#gráfico-para-entendimento)
+    - [5. Resultados e Análises](#5-resultados-e-análises)
+      - [5.1 Resultados dos testes](#51-resultados-dos-testes)
+        - [5.1.1 Alpha](#511-alpha)
+        - [5.1.2 Beta](#512-beta)
+        - [5.1.3 Gamma](#513-gamma)
+        - [5.1.4 Delta](#514-delta)
+      - [5.2 Análise dos resultados](#52-análise-dos-resultados)
+        - [5.2.1 Semelhanças entre `fifo` e `custom`](#521-semelhanças-entre-fifo-e-custom)
+        - [5.2.2 Tendência Geral Decrescente](#522-tendência-geral-decrescente)
+        - [5.2.3 Comportamento constante do `gamma` com `fifo` e `custom`](#523-comportamento-constante-do-gamma-com-fifo-e-custom)
+        - [5.2.4 Comportamento linear de `delta`](#524-comportamento-linear-de-delta)
+        - [5.2.5 Tempo de execução](#525-tempo-de-execução)
+  - [Apêndice](#apêndice)
+    - [Vazamento de memória](#vazamento-de-memória)
+
 ## Introdução
 Este documento reúne um apanhado de informações acerca da solução dos discentes autores para resolver o enunciado do trabalho 2 da disciplina INE5412.
 
@@ -53,7 +89,6 @@ Depois disso, o executável `virtmem` estará disponível na raiz do projeto. Pa
 > Todos os objetos `.o` estão localizados na pasta `build`, e o executável `virtmem` está localizado na raiz do projeto.
 
 #### 3.3 Funcionamento do Tratador de Page Faults:
-##### Passos:
 
 1. Uma falta de página (*segmentation fault*) é detectada pelo sistema operacional, que aciona o tratador de sinais (`internal_fault_handler`) configurado pela classe `Page_Table`.
 2. O tratador delega a responsabilidade para a instância da classe `Page_Replacement`, que incrementa as estatísticas de falhas de página.
@@ -73,7 +108,7 @@ Depois disso, o executável `virtmem` estará disponível na raiz do projeto. Pa
 #### 3.4 Diagramas
 ##### 3.4.1 Diagrama de classes
 
-TODO FILL
+![Diagrama de classes](relatorio/uml.png)
 
 ##### 3.4.2 Fluxo
 
@@ -146,6 +181,8 @@ Os seguintes testes foram da seguinte forma
 ./virtmem <list(range(3, 100))> 100 <["rand", "fifo", "custom"]> <["alpha", "beta", "gamma", "delta"]>
 ```
 
+> O trecho acima mistura Python e Bash, onde `list(range(3, 100))` gera uma lista de números de frames de 3 a 99, e os algoritmos e programas são iterados para cada combinação. 
+
 Ou seja, para cada programa (`alpha`, `beta`, `gamma`, `delta`), foram testados os algoritmos de substituição de página (`rand`, `fifo` e `custom`) com um número de frames variando de 3 a 100 e fixamente com 100 páginas. Os resultados foram coletados e organizados em gráficos para análise.
 
 > Cabe destacar que todos os testes de aleatoriedade foram executados com a semente de aleatoriedade `srand(0)`, para garantir a reprodutibilidade dos resultados.
@@ -211,34 +248,45 @@ Esse comportamento demonstra que, na ausência de localidade, o algoritmo de sub
 
 #### 5.2 Análise dos resultados
 
-##### 5.2.1 Valores iguais de `fifo` e `custom`
-Ambos os algoritmos `fifo` e `custom` se comportam de maneira semelhante quando
-1. As páginas não são reutilizadas dentro do espaço de frames disponíveis.
-2. As páginas são acessadas em um padrão sequencial e uniforme.
+A análise a seguir interpreta os gráficos obtidos para cada programa, destacando padrões, justificando semelhanças entre algoritmos e relacionando o comportamento observado com os conceitos de localidade e substituição de páginas.
 
-Ou seja, não há reaproveitamento de páginas antes que elas sejam substituídas. Quando isso acontece, tanto `fifo` quanto `custom`
+##### 5.2.1 Semelhanças entre `fifo` e `custom`
+
+Observa-se que, em muitos casos, os algoritmos `fifo` e `custom` apresentaram desempenho idêntico. Essa convergência ocorre principalmente quando:
+
+1. O padrão de acesso não reutiliza páginas antes de serem substituídas;
+2. O número de frames disponíveis é insuficiente para manter páginas ativas em memória por tempo suficiente.
+
+Nessas situações, não há vantagem prática em considerar o histórico de acessos, pois a substituição ocorrerá de forma semelhante, pois tanto `fifo` quanto `custom`
+
 - Inserem a nova página no primeiro frame livre;
 - Quando os frames estão cheios, removem a “mais antiga”:
   - `fifo` remove a página que entrou primeiro;
   - `custom` remove a página que não foi acessada há mais tempo.
-- Quando não há solicitações de reutilização de páginas, ambos os algoritmos apresentam o mesmo desempenho, pois não há diferença entre remover a página mais antiga ou a menos recentemente usada.
+- Quando o padrão de acesso não reaproveita páginas antes de sua substituição, a lógica de remoção — seja pela ordem de chegada (FIFO) ou pela idade do último acesso (LRU) — leva à mesma escolha. Assim, os dois algoritmos convergem para um desempenho idêntico, como observado nos testes.
 
 Ou seja, os programas `alpha`, `beta`, `gamma` e `delta` não apresentam reutilização antes da substituição, não favorecem localidade temporal e, portanto, não se beneficiam de um algoritmo mais sofisticado como o `custom`.
 
-##### 5.2.2 Caráter num geral ser descendente
-Os gráficos de `disk reads`, `disk writes` e `page faults` tendem a ser descendentes, pois:
-1. À medida que o número de frames aumenta, mais páginas podem ser mantidas na memória, reduzindo a necessidade de leituras e escritas no disco.
-2. Com mais frames, o número de faltas de página diminui, pois mais páginas podem ser mantidas na memória, reduzindo a necessidade de leituras e escritas no disco.
-3. O aumento do número de frames permite que mais páginas sejam mantidas na memória, reduzindo a necessidade de substituições e, consequentemente, o número de faltas de página.
+Dessa forma, se nenhuma das páginas é reutilizada entre sua carga e sua substituição, ambas as estratégias convergem para o mesmo resultado.
+
+##### 5.2.2 Tendência Geral Decrescente
+
+Os gráficos de `disk reads`, `disk writes` e `page faults` seguem, em quase todos os casos, uma tendência decrescente à medida que o número de frames aumenta. Isso é esperado, pois:
+
+- A tendência decrescente nos gráficos de page faults, disk reads e disk writes está diretamente relacionada à quantidade de frames disponíveis. Com mais frames, há maior capacidade de manter páginas na memória, reduzindo a necessidade de substituição e, consequentemente, os acessos ao disco.
+
+A queda não é sempre linear, dado que a distribuição de acessos e o comportamento dos programas variam, mas a tendência geral se mantém.
 
 ##### 5.2.3 Comportamento constante do `gamma` com `fifo` e `custom`
-O programa `gamma` apresenta um padrão constante em relação ao número de frames, tanto para `fifo` quanto para `custom`. Isso ocorre porque o programa `gamma` acessa dois grandes vetores de forma sequencial e simétrica, realizando operações de produto escalar em iterações completas. Esse padrão resulta em um comportamento previsível de falta de páginas:
-1. Todas as páginas dos vetores são acessadas em sequência várias vezes. Isso gera um padrão de substituições que se repete de forma estável à medida que o número de frames aumenta.
-2. Como todas as páginas são usadas com a mesma frequência e espaçamento, não há uma vantagem clara em preservar as páginas mais recentemente acessadas, o que anula a diferença entre `fifo` e `custom` (já discutido anteriormente).
+
+O comportamento constante de faltas de página observado com `fifo` e `custom` no programa `gamma` indica substituições cíclicas. Ocorre que o programa `gamma` alterna entre dois vetores grandes de forma cíclica, que gera um comportamento constante de faltas de página, realizando operações de produto escalar em iterações completas típicas de cenários que levam ao fenômeno conhecido como thrashing. Embora o número de frames aumente, o padrão de acesso alternado entre dois grandes vetores força a substituição contínua de páginas que logo serão reutilizadas.
+
+1. Como os vetores são acessados de forma alternada, qualquer frame alocado para um vetor será substituído pouco depois por uma página do outro vetor.
+2. Ambos os algoritmos operam de forma determinística nesse ciclo, o que impede ganho de desempenho mesmo com mais frames.
 
 Isso já não acontece com o `rand` porque o algoritmo escolhe aleatoriamente qual página remover da memória sempre que ocorre uma falta de página e não há frame livre. Dessa forma, o `rand` não apresenta um padrão constante, mas sim descendente, pois o número de frames aumenta e, consequentemente, o número de faltas de página diminui.
 
-##### 5.2.4 Comportamento linear descendente de `delta`
+##### 5.2.4 Comportamento linear de `delta`
 Seja com qualquer algoritmo de substituição de página, o programa `delta` apresenta, num geral, um comportamento linear descendente (em `rand` é perceptível uma tendência) para leituras de disco, escritas de disco e faltas de página. Isso ocorre porque os acessos do programa são feitos de forma aleatória, sendo altamente dispersos e com baixíssima reutilização.
 
 Dessa forma, à medida que o número de frames aumenta, mais páginas podem ser mantidas na memória - reduzindo a chance de substituições. 
