@@ -39,6 +39,8 @@
         - [5.2.5 Tempo de execução](#525-tempo-de-execução)
   - [Apêndice](#apêndice)
     - [Vazamento de memória](#vazamento-de-memória)
+    - [Resultados específicos esperados](#resultados-específicos-esperados)
+  - [Conclusão](#conclusão)
 
 ## Introdução
 
@@ -70,12 +72,13 @@ Para cada programa ( `alpha` , `beta` , `gamma` , `delta` ), os seguintes comand
 ### 3 Arquitetura
 
 #### 3.1 Estrutura Básica
+
 O projeto foi dividido nas seguintes classes:
 
 * `Page_Table`: Interface com a tabela de páginas. Gerencia o mapeamento entre páginas virtuais e frames físicos e captura falhas de página usando um tratador de sinais (`SIGSEGV`).
 * `Disk`: Simulação de um disco secundário, fornecendo operações de leitura e escrita em blocos.
 * `Page_Replacement`: Gerencia o estado dos frames físicos (livres/ocupados) e implementa a lógica para os algoritmos de substituição de páginas quando ocorrem falhas de página.
-* `Program`: Classe responsável por gerenciar os programas utilizados nas execuções (`alpha`,  `beta`,  `gamma` e `delta`). Ela coordena o fluxo das instruções, realiza acessos à memória virtual e simula os diferentes padrões de uso de memória definidos para os testes.
+* `Program`: Classe responsável por gerenciar os programas utilizados nas execuções (`alpha`,   `beta`,  `gamma` e `delta`). Ela coordena o fluxo das instruções, realiza acessos à memória virtual e simula os diferentes padrões de uso de memória definidos para os testes.
 
 A classe `Page_Replacement` utiliza estruturas de dados auxiliares para implementar os algoritmos. O `std::vector<int> frame_table` monitora qual página ocupa cada frame, atendendo ao requisito de gerenciar os frames livres. Para o algoritmo FIFO, a `std::queue<int> fifo_queue` mantém a ordem de entrada das páginas. Já o algoritmo `custom` (LRU) utiliza p `std::vector<int> tempo_acesso` para registrar o tempo do último acesso a cada frame.
 
@@ -149,6 +152,7 @@ Mantém uma fila ( `std::queue` ) das páginas carregadas na memória. Quando um
 #### 4.3.1 Comparações
 
 ##### Rand
+
 * O algoritmo `rand` seleciona um frame aleatoriamente para remoção, o que pode levar a uma alta taxa de faltas de página, especialmente em cenários onde as páginas acessadas recentemente são necessárias novamente.
 * Nesse cenário, existirão diversas possibilidades do `custom` se sair melhor que o `rand`, pois o `custom` prioriza a remoção de páginas que não foram acessadas recentemente, enquanto o `rand` não considera o histórico de acesso.
 
@@ -319,6 +323,7 @@ Isso pode ser perceptível no seguinte gráfico que compara o tempo de execuçã
 ## Apêndice
 
 ### Vazamento de memória
+
 Durante toda a implementação do sistema, foram constantemente verificados os vazamentos de memória, utilizando o Valgrind, para garantir que não existam vazamentos no código final. A alocação dinâmica de memória é corretamente liberada com `delete[]` em seus respectivos destrutores ou métodos de limpeza. O objeto `Disk` é explicitamente deletado em `main.cpp` . A seguir, um exemplo de execução do Valgrind:
 
 ```bash
@@ -346,3 +351,25 @@ use: virtmem <npages> <nframes> <rand|fifo|custom> <alpha|beta|gamma|delta>
 ```
 
 Ou seja, não foram encontrados vazamentos de memória durante a execução do sistema e todas as alocações de memória foram devidamente liberadas.
+
+### Resultados específicos esperados
+
+No documento de enunciado do trabalho, são apresentados os resultados esperados para cada programa com execução de 10 páginas. A seguir estão registrados valores de retorno para execuções com 10 páginas e 5 frames, com o algoritmo `custom` e cada programa.
+
+Programa | Número de páginas | Número de frames | Algoritmo | Page Faults | Disk Reads | Disk Writes | Resultado
+---------|-------------------|------------------|-----------|-------------|------------|-------------|-----------
+`alpha`  | 10                | 5                | custom    | 2030        | 1020       | 1010        | 5222400
+`beta`   | 10                | 5                | custom    | 81          | 50         | 31          | 5232896
+`gamma`  | 10                | 5                | custom    | 120         | 110        | 10          | 2220835000
+`delta`  | 10                | 5                | custom    | 209853      | 104931     | 104922      | 5201920
+
+
+## Conclusão
+
+Com o fim deste segundo trabalho da disciplina de Sistemas Operacionais 1, conclui-se o trajeto dos discentes autores por essa fase no curso de Ciências da Computação. É com bastante alegria que se finaliza o trabalho e a matéria, com a certeza de que o conhecimento adquirido será de grande valia para o futuro.
+
+Agradecemos aos professores da disciplina pelo tempo dedicado e pela paciência.
+
+Em relação ao trabalho, foi possível compreender melhor o funcionamento da memória virtual paginada, implementação de algoritmos de substituição de páginas e o impacto desses algoritmos no desempenho do sistema - além de compreender melhor como o perfil de acesso à memória de um programa pode influenciar a eficiência dos algoritmos de substituição. A conclusão deste sistema de memória virtual representa um marco importante na formação dos autores, consolidando conceitos fundamentais de sistemas operacionais e programação em C++ - anteriormente vistos apenas em teoria na primeira metade da matéria.
+
+Certamente há espaço para melhorias e otimizações, como por exemplo construir novos perfis de programas e novos algoritmos customizados de substituição de páginas, mas o sistema construído e entregue atende, aos olhos dos autores, aos requisitos do trabalho e demonstra o conhecimento adquirido.

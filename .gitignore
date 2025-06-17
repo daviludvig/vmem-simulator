@@ -2,6 +2,7 @@ opsys-sp22
 .vscode
 venv
 __pycache__
+*tmp
 
 # Prerequisites
 *.d
