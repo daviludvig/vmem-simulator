@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   const char *program_name = argv[4];
 
   // Inicializa simulador do disco
-  Disk *disk = new Disk("Disco simulado 1", npages);
+  Disk *disk = new Disk("myvirtualdisk", npages);
 
   // Tabela de paginas. Precisa passar um wrapper aqui como handler
   // A Page_Table ainda nao sabe sobre a instância do Page_Replacement, e nao
