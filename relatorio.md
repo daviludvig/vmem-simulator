@@ -325,11 +325,14 @@ Isso pode ser perceptível no seguinte gráfico que compara o tempo de execuçã
 
 ### Vazamento de memória
 
-Durante toda a implementação do sistema, foram realizados testes constantes para verificar a presença de vazamentos de memória, utilizando o AddressSanitizer (-fsanitize=address). Ao final do desenvolvimento, o sistema foi executado com o comando ./virtmem 10 10 rand alpha, e nenhuma falha ou vazamento de memória foi detectado, comprovando que todas as alocações dinâmicas foram devidamente tratadas.
+Durante toda a implementação do sistema, foram realizados testes constantes para verificar a presença de vazamentos de memória, utilizando o `AddressSanitizer` (`-fsanitize=address`). Ao final do desenvolvimento, o sistema foi executado com o comando `./virtmem 10 10 rand alpha`, e nenhuma falha ou vazamento de memória foi detectado, comprovando que todas as alocações dinâmicas foram devidamente tratadas.
 
-A alocação dinâmica de memória é corretamente liberada com delete[] em seus respectivos destrutores ou métodos de limpeza. O objeto Disk é explicitamente deletado em main.cpp.
+A alocação dinâmica de memória é corretamente liberada com `delete[]` em seus respectivos destrutores ou métodos de limpeza. O objeto `Disk` é explicitamente deletado em `main.cpp`.
 
 Ou seja, não foram encontrados vazamentos de memória durante a execução do sistema e todas as alocações de memória foram devidamente liberadas.
+
+> No primeiro trabalho, foi utilizado o comando `valgrind` para verificar a presença de vazamentos de memória. No entanto, o `valgrind` não é compatível com o tratamento de sinais, o que impossibilita a verificação de vazamentos de memória durante a execução do sistema para o segundo trabalho.
+
 
 ### Resultados específicos esperados
 
